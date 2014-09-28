@@ -1,5 +1,15 @@
 <html>
-  <head></head>
+  <head>
+    <style>
+      #dialog {
+        display: none;
+      }
+
+      table {
+        width:100%;
+      }
+    </style>
+  </head>
   <body>
     <table>
       <thead>
@@ -13,15 +23,11 @@
           </td>
 
           <td>
-            Estimate Results
-          </td>
-
-          <td>
             Fetched Results
           </td>
 
           <td>
-            Current Job
+            Progress
           </td>
         </tr>
       </thead>
@@ -30,13 +36,13 @@
     <button id="new">New Scraper</button>
 
     <div id="dialog">
-      <input id="keywords">
+      <input id="keyword">
 
       <label>
         From:
       </label>
       <select id="from">
-        <option>2007</option>
+        <option selected>2007</option>
         <option>2008</option>
         <option>2009</option>
         <option>2010</option>
@@ -49,7 +55,7 @@
       <label>
         To:
       </label>
-      <select id="from">
+      <select id="to">
         <option>2007</option>
         <option>2008</option>
         <option>2009</option>
@@ -57,16 +63,104 @@
         <option>2011</option>
         <option>2012</option>
         <option>2013</option>
-        <option>2014</option>
+        <option selected>2014</option>
       </select>
+
+      <button id="start">Start!</button>
     </div>
+
+    <script type="text/template" id="row">
+      <tr>
+        <td class="keyword"></td>
+
+        <td>
+          <span class="from"></span>
+          -
+          <span class="to"></span>
+        </td>
+
+
+        <td class="results">0</td>
+
+        <td class="job">
+          <button class="download">Download</button>
+        </td>
+      </tr>
+    </script>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
       var socket = io();
 
-      
+      $keyword = $('#keyword');
+      $new     = $('#new');
+      $dialog  = $('#dialog');
+      $start   = $('#start');
+      $from    = $('#from');
+      $to      = $('#to');
+      $table   = $('table');
+
+      $new.click(function() {
+        $dialog.toggle();
+      });
+
+      $start.click(addScraper);
+
+      function addScraper() {
+        if(!$keyword.val()) {
+          alert('Please define a keyword');
+          return ;
+        }
+
+        var options = {
+          keyword:$keyword.val(),
+          start_year:$from.val(),
+          end_year:$to.val()
+        }
+
+        socket.emit('new scraper', options);
+        $keyword.val('');
+        $dialog.hide();
+      }
+
+      socket.on('new scraper', scraperAdded);
+      socket.on('result', foundResult);
+      socket.on('end', finished);
+
+      function scraperAdded(id, options) {
+        var $row = $($('#row').html());
+
+        $row.attr('data-scraper-id', id);
+        $row.find('.keyword').text(options.keyword);
+        $row.find('.from').text(options.start_year);
+        $row.find('.to').text(options.end_year);
+        $row.find('.download').hide();
+
+        $row.find('.download').click(download.bind(null, id));
+
+        $row.appendTo($table);
+      }
+
+      function foundResult(id) {
+        $row = getRow(id);
+        $results = $row.find('.results');
+        var c = parseInt($results.text())+1;
+        $results.text(c);
+      }
+
+      function finished(id) {
+        $row = getRow(id);
+        $row.find('.download').show();
+      }
+
+      function getRow(id) {
+        return $('tr[data-scraper-id='+id+']');
+      }
+
+      function download(id) {
+          window.open('/download/'+id);
+      }
     </script>
   </body>
 </html>

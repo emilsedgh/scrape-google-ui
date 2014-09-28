@@ -11,6 +11,10 @@
   "license": "BSD",
   "dependencies": {
     "express": "~4.9.4",
-    "socket.io": "~1.1.0"
+    "socket.io": "~1.1.0",
+    "scrape-google": "0.0.1",
+    "function-rate-limit": "0.0.1",
+    "fast-csv": "~0.5.2",
+    "request": "~2.44.0"
   }
 }
