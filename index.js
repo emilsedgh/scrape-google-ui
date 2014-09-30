@@ -38,6 +38,10 @@ function newScraper(sock, options) {
   scraper.on('end', function() {
     io.sockets.emit('end', id);
   });
+
+  scraper.on('error', function() {
+    io.sockets.emit('error', id);
+  });
 }
 
 app.get('/download/:id', function(req, res) {
@@ -55,4 +59,4 @@ app.get('/download/:id', function(req, res) {
   });
 });
 
-http.listen(process.argv[2]);
+http.listen(8080);

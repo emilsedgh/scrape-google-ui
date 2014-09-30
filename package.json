@@ -15,6 +15,7 @@
     "scrape-google": "0.0.1",
     "function-rate-limit": "0.0.1",
     "fast-csv": "~0.5.2",
-    "request": "~2.44.0"
+    "request": "~2.44.0",
+    "moment": "~2.8.3"
   }
 }

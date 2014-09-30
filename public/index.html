@@ -36,9 +36,14 @@
     <button id="new">New Scraper</button>
 
     <div id="dialog">
+      <label for="keyword">
+        Keyword
+      </label>
       <input id="keyword">
 
-      <label>
+      <div></div>
+
+      <label for="from">
         From:
       </label>
       <select id="from">
@@ -52,7 +57,7 @@
         <option>2014</option>
       </select>
 
-      <label>
+      <label for="to">
         To:
       </label>
       <select id="to">
@@ -65,6 +70,20 @@
         <option>2013</option>
         <option selected>2014</option>
       </select>
+
+      <div></div>
+
+      <label for="monthbymonth">
+        Month-By-Month
+      </label>
+      <input id="monthbymonth" type="radio" name="range" value="months">
+
+      <label for="yearbyyear">
+        Year-By-Year
+      </label>
+      <input id="yearbyyear" type="radio" name="range" value="years" checked>
+
+      <div></div>
 
       <button id="start">Start!</button>
     </div>
@@ -100,6 +119,7 @@
       $from    = $('#from');
       $to      = $('#to');
       $table   = $('table');
+      $range   = $('[name=range]');
 
       $new.click(function() {
         $dialog.toggle();
@@ -116,7 +136,8 @@
         var options = {
           keyword:$keyword.val(),
           start_year:$from.val(),
-          end_year:$to.val()
+          end_year:$to.val(),
+          range:$range.filter(':checked').val()
         }
 
         socket.emit('new scraper', options);
@@ -127,6 +148,7 @@
       socket.on('new scraper', scraperAdded);
       socket.on('result', foundResult);
       socket.on('end', finished);
+      socket.on('error', error);
 
       function scraperAdded(id, options) {
         var $row = $($('#row').html());
@@ -160,6 +182,11 @@
 
       function download(id) {
           window.open('/download/'+id);
+      }
+
+      function error(id) {
+        $row = getRow(id);
+        $row.find('.job').css({color:'red'}).text('Blocked!');
       }
     </script>
   </body>
