@@ -149,14 +149,17 @@
       socket.on('result', foundResult);
       socket.on('end', finished);
       socket.on('error', error);
+      socket.on('pause', paused);
+      socket.on('resume', resumed);
 
-      function scraperAdded(id, options) {
+      function scraperAdded(id, options, current_results) {
         var $row = $($('#row').html());
 
         $row.attr('data-scraper-id', id);
         $row.find('.keyword').text(options.keyword);
         $row.find('.from').text(options.start_year);
         $row.find('.to').text(options.end_year);
+        $row.find('.results').text(current_results);;
         $row.find('.download').hide();
 
         $row.find('.download').click(download.bind(null, id));
@@ -187,6 +190,16 @@
       function error(id) {
         $row = getRow(id);
         $row.find('.job').css({color:'red'}).text('Blocked!');
+      }
+
+      function paused(id, seconds) {
+        $row = getRow(id);
+        $row.find('.job').css({color:'red'}).text('Paused for '+seconds+' seconds');
+      }
+
+      function resumed(id, seconds) {
+        $row = getRow(id);
+        $row.find('.job').css({color:'inherit'}).text('Resumed');
       }
     </script>
   </body>
