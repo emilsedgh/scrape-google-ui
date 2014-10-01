@@ -27,7 +27,11 @@
           </td>
 
           <td>
-            Progress
+            Current State
+          </td>
+
+          <td>
+            Download
           </td>
         </tr>
       </thead>
@@ -101,7 +105,11 @@
 
         <td class="results">0</td>
 
-        <td class="job">
+        <td class="state">
+          In Progress
+        </td>
+
+        <td>
           <button class="download">Download</button>
         </td>
       </tr>
@@ -160,7 +168,6 @@
         $row.find('.from').text(options.start_year);
         $row.find('.to').text(options.end_year);
         $row.find('.results').text(current_results);;
-        $row.find('.download').hide();
 
         $row.find('.download').click(download.bind(null, id));
 
@@ -176,7 +183,7 @@
 
       function finished(id) {
         $row = getRow(id);
-        $row.find('.download').show();
+        $row.find('.state').css({color:'green'}).text('finished');
       }
 
       function getRow(id) {
@@ -189,17 +196,17 @@
 
       function error(id) {
         $row = getRow(id);
-        $row.find('.job').css({color:'red'}).text('Blocked!');
+        $row.find('.state').css({color:'red'}).text('Blocked!');
       }
 
       function paused(id, seconds) {
         $row = getRow(id);
-        $row.find('.job').css({color:'red'}).text('Paused for '+seconds+' seconds');
+        $row.find('.state').css({color:'red'}).text('Paused for '+seconds+' seconds');
       }
 
       function resumed(id, seconds) {
         $row = getRow(id);
-        $row.find('.job').css({color:'inherit'}).text('Resumed');
+        $row.find('.state').css({color:'inherit'}).text('In Progress');
       }
     </script>
   </body>
